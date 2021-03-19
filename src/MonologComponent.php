@@ -2,25 +2,27 @@
 
 namespace YiiMonolog;
 
+use CApplicationComponent;
+use CException;
+use Closure;
+use Exception;
+use Monolog\Formatter\FormatterInterface;
+use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
 use Monolog\Registry;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Formatter\FormatterInterface;
+use RuntimeException;
+use Yii;
 
-class MonologComponent extends \CApplicationComponent
+class MonologComponent extends CApplicationComponent
 {
-    /** @var string */
-    public $name = 'application';
-    /** @var string */
-    public $loggerName = 'main';
-    /** @var array */
-    public $handlers = [];
-    /** @var array */
-    public $processors = [];
+    public string $name = 'application';
+    public string $loggerName = 'main';
+    public array $handlers = [];
+    public array $processors = [];
 
     /**
      * @inheritdoc
-     * @throws RuntimeException
+     * @throws RuntimeException|CException
      */
     public function init()
     {
@@ -40,13 +42,17 @@ class MonologComponent extends \CApplicationComponent
     }
 
     /**
-     * @param string|array $config
+     * @param  string|array  $config
      *
-     * @throws RuntimeException
      * @return HandlerInterface
+     * @throws RuntimeException|CException
      */
-    protected function createHandler($config)
+    protected function createHandler($config): HandlerInterface
     {
+        if ($config instanceof Closure) {
+            return $config();
+        }
+
         if (isset($config['formatter'])) {
             $formatterConfig = $config['formatter'];
             unset($config['formatter']);
@@ -56,7 +62,7 @@ class MonologComponent extends \CApplicationComponent
         if (is_array($config)) {
             $instance = call_user_func_array(['Yii', 'createComponent'], $config);
         } else {
-            $instance = \Yii::createComponent($config);
+            $instance = Yii::createComponent($config);
         }
 
         if (isset($formatterConfig)) {
@@ -68,42 +74,44 @@ class MonologComponent extends \CApplicationComponent
     }
 
     /**
-     * @param array|string $config
+     * @param  string|array  $config
      *
-     * @throws RuntimeException
-     * @return Closure
+     * @return FormatterInterface
+     * @throws CException
      */
-    protected function createProcessor($config)
+    protected function createFormatter($config): FormatterInterface
+    {
+        if (is_array($config)) {
+            $instance = call_user_func_array(['Yii', 'createComponent'], $config);
+        } else {
+            $instance = Yii::createComponent($config);
+        }
+
+        return $instance;
+    }
+
+    /**
+     * @param  array|string  $config
+     *
+     * @return Closure
+     * @throws RuntimeException
+     */
+    protected function createProcessor($config): callable
     {
         try {
             if (is_array($config)) {
                 $instance = call_user_func_array(['Yii', 'createComponent'], $config);
             } else {
-                $instance = \Yii::createComponent($config);
+                $instance = Yii::createComponent($config);
             }
             if (is_callable($instance)) {
                 return $instance;
             }
-        } catch(Exception $exception) {}
+        } catch (Exception $exception) {
+        }
 
         throw new RuntimeException(
             'Unknown processor type, must be a Closure or a valid config for an invokable component'
         );
-    }
-
-    /**
-     * @param string|array $config
-     *
-     * @return FormatterInterface
-     */
-    protected function createFormatter($config)
-    {
-        if (is_array($config)) {
-            $instance = call_user_func_array(['Yii', 'createComponent'], $config);
-        } else {
-            $instance = \Yii::createComponent($config);
-        }
-
-        return $instance;
     }
 }

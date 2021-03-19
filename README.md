@@ -39,6 +39,21 @@ return [
                     'stream' => '/runtime/app.log',
                     'formatter' => 'Monolog\Formatter\LineFormatter',
                 ],
+                static function () {
+                    /** @var StreamHandler $stream */
+                    $stream = Yii::createComponent([
+                        'class' => RotatingFileHandler::class,
+                    ],
+                        Yii::app()->runtimePath.'/application.log', 10);
+            
+                    $formatter = Yii::createComponent([
+                        'class' => LineFormatter::class,
+                    ]);
+            
+                    $stream->setFormatter($formatter);
+            
+                    return $stream;
+                }
             ],
             'processors' => [
                 'Monolog\Processor\ProcessIdProcessor',

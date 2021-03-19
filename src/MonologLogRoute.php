@@ -9,10 +9,8 @@ use Monolog\Registry;
 
 class MonologLogRoute extends \CLogRoute
 {
-    /** @var string */
-    public $loggerName = 'main';
-    /** @var LoggerInterface */
-    protected $logger;
+    public string $loggerName = 'main';
+    protected LoggerInterface $logger;
 
     /**
      * @inheritdoc
@@ -29,7 +27,7 @@ class MonologLogRoute extends \CLogRoute
     {
         foreach ($logs as $log) {
             $level = $this->levelToString($log[1]);
-            if ($level === 'DEBUG' && ((defined('YII_DEBUG') && YII_DEBUG == false) || !defined('YII_DEBUG'))) {
+            if ($level === 'DEBUG' && ((defined('YII_DEBUG') && YII_DEBUG === false) || !defined('YII_DEBUG'))) {
                 continue;
             }
             $this->logger->log(
@@ -61,11 +59,11 @@ class MonologLogRoute extends \CLogRoute
 
     /**
      * Convert Yii level string to monolog format
-     * @param string $level
+     * @param string|int $level
      *
      * @return string
      */
-    private function levelToString($level)
+    private function levelToString($level): string
     {
         $allowed = ['DEBUG', 'INFO', 'NOTICE', 'WARNING', 'ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY'];
         if (in_array(strtoupper($level), $allowed)) {
