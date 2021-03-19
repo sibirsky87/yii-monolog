@@ -2,15 +2,14 @@
 
 namespace YiiMonolog;
 
-use Monolog\Registry;
+use CErrorHandler;
 use Monolog\ErrorHandler;
+use Monolog\Registry;
 
-class MonologErrorHandler extends \CErrorHandler
+class MonologErrorHandler extends CErrorHandler
 {
-    /** @var string */
-    public $loggerName = 'main';
-    /** @var Monolog\ErrorHandler */
-    protected $errorHandler;
+    public string $loggerName = 'main';
+    protected ErrorHandler $errorHandler;
 
     /**
      * @inheritdoc
@@ -30,7 +29,6 @@ class MonologErrorHandler extends \CErrorHandler
      */
     protected function handleException($e)
     {
-        $this->errorHandler->handleException($e);
         parent::handleException($e);
     }
 

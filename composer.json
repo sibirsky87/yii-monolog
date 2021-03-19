@@ -1,5 +1,5 @@
 {
-    "name": "fidelize/yii-monolog",
+    "name": "p4it-kft/yii-monolog",
     "description": "Extension for using monolog with yii 1.x",
     "keywords": ["monolog", "yii", "log", "error", "exception", "debug", "monitoring"],
     "type": "package",
@@ -24,14 +24,21 @@
             "name": "Leonardo Gomes",
             "email": "lenardo.delfica@gmail.com",
             "role": "Developer"
+        },
+        {
+            "name": "P4IT Kft",
+            "homepage": "https://www.p4it.hu",
+            "role": "Company"
+        },
+        {
+            "name": "Papp Péter",
+            "email": "papp.peter@p4it.hu",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": ">=7.4",
         "monolog/monolog": "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "*"
     },
     "autoload": {
         "psr-4": {
