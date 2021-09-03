@@ -37,7 +37,8 @@ class MonologErrorHandler extends CErrorHandler
      */
     protected function handleError($event)
     {
-        $this->errorHandler->handleError($event->code, $event->message, $event->file, $event->line, $event->params);
+        $context = is_array($event->params) ? $event->params : [$event->params];
+        $this->errorHandler->handleError($event->code, $event->message, $event->file, $event->line, $context);
         parent::handleError($event);
     }
 }
