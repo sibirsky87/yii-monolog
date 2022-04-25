@@ -4,6 +4,8 @@ namespace YiiMonolog;
 
 use Monolog\Registry;
 use Monolog\ErrorHandler;
+use Monolog\Utils;
+use Psr\Log\LogLevel;
 
 class MonologErrorHandler extends \CErrorHandler
 {
@@ -30,7 +32,12 @@ class MonologErrorHandler extends \CErrorHandler
      */
     protected function handleException($e)
     {
-        $this->errorHandler->handleException($e);
+        $logger = Registry::getInstance($this->loggerName);
+        $logger->log(
+            LogLevel::ERROR,
+            sprintf('Uncaught Exception %s: "%s" at %s line %s', get_class($e), $e->getMessage(), $e->getFile(), $e->getLine()),
+            ['exception' => $e]
+        );
         parent::handleException($e);
     }
 
